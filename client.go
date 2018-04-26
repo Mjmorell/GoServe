@@ -33,7 +33,6 @@ type Client struct {
 func (c *Client) FilterRequests(table, opts string) ([]Request, error) {
 	buf := &bytes.Buffer{}
 	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true"
-	//fmt.Printf(testurl + "\n")
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
 	if err != nil {
 		return nil, err
@@ -46,18 +45,13 @@ func (c *Client) FilterRequests(table, opts string) ([]Request, error) {
 		return nil, err
 	}
 	buf.Reset()
-	//fmt.Printf(res.Status)
 	var echeck Err
 
 	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
-	//fmt.Printf(echeck.Err)
 	if err != nil {
 		return nil, err
 	}
 
-	//jsonString := buf.String()
-	//fmt.Printf(jsonString)
-	//tempStruct := ChangeRequest{}
 	var v struct {
 		Records []Request
 	}
@@ -70,7 +64,6 @@ func (c *Client) FilterRequests(table, opts string) ([]Request, error) {
 func (c *Client) FilterAssets(table, opts string) []Asset {
 	buf := &bytes.Buffer{}
 	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true"
-	//fmt.Printf(testurl + "\n")
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
 	CheckErr(err)
 
@@ -79,16 +72,11 @@ func (c *Client) FilterAssets(table, opts string) []Asset {
 	res, err := http.DefaultClient.Do(req)
 	CheckErr(err)
 	buf.Reset()
-	//fmt.Printf(res.Status)
 	var echeck Err
 
 	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
-	//fmt.Printf(echeck.Err)
 	CheckErr(err)
 
-	//jsonString := buf.String()
-	//fmt.Printf(jsonString)
-	//tempStruct := ChangeRequest{}
 	var v struct {
 		Records []Asset
 	}
