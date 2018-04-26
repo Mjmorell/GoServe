@@ -1,4 +1,4 @@
-package main
+package goserve
 
 import (
 	"bytes"
@@ -8,18 +8,24 @@ import (
 	"net/http"
 )
 
+func CheckErr(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 type Err struct {
 	Err    string `json:"error"`
 	Reason string
 }
-/*
+
 func (e Err) Error() string {
 	if e.Reason == "" {
 		return e.Err
 	}
 	return fmt.Sprintf("%s: %s", e.Err, e.Reason)
 }
-*/
+
 type Client struct {
 	Username, Password, Instance string
 }
@@ -53,7 +59,7 @@ func (c *Client) FilterRequests(table, opts string) ([]Request, error) {
 	//fmt.Printf(jsonString)
 	//tempStruct := ChangeRequest{}
 	var v struct {
-		Records []ChangeRequest
+		Records []Request
 	}
 	json.NewDecoder(buf).Decode(&v)
 
