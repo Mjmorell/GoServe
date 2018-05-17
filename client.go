@@ -85,6 +85,33 @@ func (c *Client) FilterAssets(table, opts string) []Asset {
 	return v.Records
 }
 
+func (c *Client) FilterComputers(table, opts string) []Computer {
+	buf := &bytes.Buffer{}
+	if table == "" {
+		table = "cmdb_ci_computer"
+	}
+	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true"
+	req, err := http.NewRequest(http.MethodGet, testurl, buf)
+	CheckErr(err)
+
+	req.SetBasicAuth(c.Username, c.Password)
+
+	res, err := http.DefaultClient.Do(req)
+	CheckErr(err)
+	buf.Reset()
+	var echeck Err
+
+	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
+	CheckErr(err)
+
+	var v struct {
+		Records []Computer
+	}
+	json.NewDecoder(buf).Decode(&v)
+
+	return v.Records
+}
+
 func (c *Client) Update(table, opts string, body interface{}) {
 
 	//err := json.NewEncoder(buf).Encode(body)
