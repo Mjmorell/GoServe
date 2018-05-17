@@ -15,5 +15,5 @@ import (
 ************************************************/
 
 func main() {
-	fmt.Println("Running...")
+	fmt.Println("Why are you running this?")
 }
