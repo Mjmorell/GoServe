@@ -68,6 +68,7 @@ type Request struct {
 	ReassignmentCount        json.Number `json:"reassignment_count,omitempty"`
 	RequestedBy              string      `json:"requested_by,omitempty"`
 	RequestedByDate          string      `json:"requested_by_date,omitempty"` //
+	RequestedFor             string      `json:"requested_for"`
 	ReviewComments           string      `json:"review_comments,omitempty"`
 	ReviewDate               string      `json:"review_date,omitempty"` //
 	ReviewStatus             string      `json:"review_status,omitempty"`
