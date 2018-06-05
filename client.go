@@ -34,6 +34,7 @@ func (c *Client) FilterRequests(table, opts string) ([]Request, error) {
 	buf := &bytes.Buffer{}
 	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true"
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
+	defer req.Body.Close()
 	if err != nil {
 		return nil, err
 	}
@@ -41,15 +42,17 @@ func (c *Client) FilterRequests(table, opts string) ([]Request, error) {
 	req.SetBasicAuth(c.Username, c.Password)
 
 	res, err := http.DefaultClient.Do(req)
+	defer res.Body.Close()
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+
 	buf.Reset()
 	var echeck Err
 
 	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
 	if err != nil {
+		res.Body.Close()
 		return nil, err
 	}
 
@@ -57,7 +60,7 @@ func (c *Client) FilterRequests(table, opts string) ([]Request, error) {
 		Records []Request
 	}
 	json.NewDecoder(buf).Decode(&v)
-
+	res.Body.Close()
 	return v.Records, nil
 
 }
@@ -66,17 +69,19 @@ func (c *Client) FilterAssets(table, opts string) []Asset {
 	buf := &bytes.Buffer{}
 	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true"
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
+	defer req.Body.Close()
 	CheckErr(err)
 
 	req.SetBasicAuth(c.Username, c.Password)
 
 	res, err := http.DefaultClient.Do(req)
-	CheckErr(err)
 	defer res.Body.Close()
+	CheckErr(err)
 	buf.Reset()
 	var echeck Err
 
 	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
+	res.Body.Close()
 	CheckErr(err)
 
 	var v struct {
@@ -94,17 +99,19 @@ func (c *Client) FilterComputers(table, opts string) []Computer {
 	}
 	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true"
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
+	defer req.Body.Close()
 	CheckErr(err)
 
 	req.SetBasicAuth(c.Username, c.Password)
 
 	res, err := http.DefaultClient.Do(req)
-	CheckErr(err)
 	defer res.Body.Close()
+	CheckErr(err)
 	buf.Reset()
 	var echeck Err
 
 	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
+	res.Body.Close()
 	CheckErr(err)
 
 	var v struct {
@@ -122,17 +129,20 @@ func (c *Client) FilterUsers(table, opts string) []User {
 	}
 	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true"
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
+	defer req.Body.Close()
 	CheckErr(err)
 
 	req.SetBasicAuth(c.Username, c.Password)
 
 	res, err := http.DefaultClient.Do(req)
-	CheckErr(err)
 	defer res.Body.Close()
+	CheckErr(err)
+
 	buf.Reset()
 	var echeck Err
 
 	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
+	res.Body.Close()
 	CheckErr(err)
 
 	var v struct {
@@ -156,6 +166,7 @@ func (c *Client) Update(table, opts string, body interface{}) {
 	CheckErr(err)
 
 	req, err := http.NewRequest(http.MethodPost, url, buf)
+	defer req.Body.Close()
 	CheckErr(err)
 
 	req.Header.Set("Content-Type", "application/json")
@@ -163,8 +174,8 @@ func (c *Client) Update(table, opts string, body interface{}) {
 	req.SetBasicAuth(c.Username, c.Password)
 
 	res, err := http.DefaultClient.Do(req)
-	CheckErr(err)
 	defer res.Body.Close()
+	CheckErr(err)
 	fmt.Println(res.Body)
-
+	res.Body.Close()
 }
