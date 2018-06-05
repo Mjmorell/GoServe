@@ -23,6 +23,7 @@ type Request struct {
 	CabRequired              bool        `json:"cab_required,string,omitempty"`
 	CalendarDuration         string      `json:"calendar_duration,omitempty"`
 	Category                 string      `json:"category,omitempty"`
+	CatItem                  string      `json:"cat_item,omitempty"`
 	ChangePlan               string      `json:"change_plan,omitempty"`
 	CloseCode                string      `json:"close_code,omitempty"`
 	CloseNotes               string      `json:"close_notes,omitempty"`
