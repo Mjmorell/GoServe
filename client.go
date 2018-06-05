@@ -44,6 +44,7 @@ func (c *Client) FilterRequests(table, opts string) ([]Request, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer res.Body.Close()
 	buf.Reset()
 	var echeck Err
 
@@ -71,6 +72,7 @@ func (c *Client) FilterAssets(table, opts string) []Asset {
 
 	res, err := http.DefaultClient.Do(req)
 	CheckErr(err)
+	defer res.Body.Close()
 	buf.Reset()
 	var echeck Err
 
@@ -98,6 +100,7 @@ func (c *Client) FilterComputers(table, opts string) []Computer {
 
 	res, err := http.DefaultClient.Do(req)
 	CheckErr(err)
+	defer res.Body.Close()
 	buf.Reset()
 	var echeck Err
 
@@ -125,6 +128,7 @@ func (c *Client) FilterUsers(table, opts string) []User {
 
 	res, err := http.DefaultClient.Do(req)
 	CheckErr(err)
+	defer res.Body.Close()
 	buf.Reset()
 	var echeck Err
 
@@ -160,5 +164,7 @@ func (c *Client) Update(table, opts string, body interface{}) {
 
 	res, err := http.DefaultClient.Do(req)
 	CheckErr(err)
+	defer res.Body.Close()
 	fmt.Println(res.Body)
+
 }
