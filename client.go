@@ -5,8 +5,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
+	"time"
 )
+
+var tr = &http.Transport{
+	MaxIdleConns:       1,
+	IdleConnTimeout:    1 * time.Second,
+	DisableCompression: false,
+	DisableKeepAlives:  true,
+}
+var httpClient = &http.Client{Transport: tr}
 
 func CheckErr(err error) {
 	if err != nil {
@@ -31,26 +41,27 @@ type Client struct {
 }
 
 func (c *Client) FilterRequests(table, opts string) ([]Request, error) {
+
 	buf := &bytes.Buffer{}
 	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true"
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
-	if err != nil {
-		return nil, err
-	}
+	req.Close = true
+	CheckErr(err)
 
 	req.SetBasicAuth(c.Username, c.Password)
 
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
+	res, err := httpClient.Do(req)
+
+	fmt.Printf("requ")
+	CheckErr(err)
+
 	buf.Reset()
 	var echeck Err
 
 	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
-	if err != nil {
-		return nil, err
-	}
+	io.Copy(ioutil.Discard, res.Body)
+	res.Body.Close()
+	CheckErr(err)
 
 	var v struct {
 		Records []Request
@@ -62,19 +73,24 @@ func (c *Client) FilterRequests(table, opts string) ([]Request, error) {
 }
 
 func (c *Client) FilterAssets(table, opts string) []Asset {
+
+	fmt.Printf("asse")
 	buf := &bytes.Buffer{}
 	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true"
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
+	req.Close = true
+	defer req.Body.Close()
 	CheckErr(err)
 
 	req.SetBasicAuth(c.Username, c.Password)
 
-	res, err := http.DefaultClient.Do(req)
+	res, err := httpClient.Do(req)
 	CheckErr(err)
 	buf.Reset()
 	var echeck Err
 
 	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
+	res.Body.Close()
 	CheckErr(err)
 
 	var v struct {
@@ -82,21 +98,26 @@ func (c *Client) FilterAssets(table, opts string) []Asset {
 	}
 	json.NewDecoder(buf).Decode(&v)
 
+	io.Copy(ioutil.Discard, res.Body)
+	res.Body.Close()
 	return v.Records
 }
 
 func (c *Client) FilterComputers(table, opts string) []Computer {
+
+	fmt.Printf("comp")
 	buf := &bytes.Buffer{}
 	if table == "" {
 		table = "cmdb_ci_computer"
 	}
 	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true"
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
+
 	CheckErr(err)
 
 	req.SetBasicAuth(c.Username, c.Password)
 
-	res, err := http.DefaultClient.Do(req)
+	res, err := httpClient.Do(req)
 	CheckErr(err)
 	buf.Reset()
 	var echeck Err
@@ -113,6 +134,8 @@ func (c *Client) FilterComputers(table, opts string) []Computer {
 }
 
 func (c *Client) FilterUsers(table, opts string) []User {
+
+	fmt.Printf("user")
 	buf := &bytes.Buffer{}
 	if table == "" {
 		table = "cmdb_ci_computer"
@@ -123,8 +146,9 @@ func (c *Client) FilterUsers(table, opts string) []User {
 
 	req.SetBasicAuth(c.Username, c.Password)
 
-	res, err := http.DefaultClient.Do(req)
+	res, err := httpClient.Do(req)
 	CheckErr(err)
+
 	buf.Reset()
 	var echeck Err
 
@@ -140,6 +164,7 @@ func (c *Client) FilterUsers(table, opts string) []User {
 }
 
 func (c *Client) Update(table, opts string, body interface{}) {
+	fmt.Printf(".")
 
 	//err := json.NewEncoder(buf).Encode(body)
 	//CheckErr(err)
@@ -152,13 +177,20 @@ func (c *Client) Update(table, opts string, body interface{}) {
 	CheckErr(err)
 
 	req, err := http.NewRequest(http.MethodPost, url, buf)
+	defer func() {
+		req.Body.Close()
+		io.Copy(ioutil.Discard, req.Body)
+	}()
 	CheckErr(err)
 
 	req.Header.Set("Content-Type", "application/json")
 
 	req.SetBasicAuth(c.Username, c.Password)
 
-	res, err := http.DefaultClient.Do(req)
+	res, err := httpClient.Do(req)
 	CheckErr(err)
 	fmt.Println(res.Body)
+	io.Copy(ioutil.Discard, res.Body)
+	res.Body.Close()
+	return
 }
