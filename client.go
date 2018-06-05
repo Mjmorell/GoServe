@@ -45,29 +45,33 @@ func (c *Client) FilterRequests(table, opts string) ([]Request, error) {
 	buf := &bytes.Buffer{}
 	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true"
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
-	req.Close = true
-	CheckErr(err)
+	defer req.Body.Close()
+	if err != nil {
+		return nil, err
+	}
 
 	req.SetBasicAuth(c.Username, c.Password)
 
-	res, err := httpClient.Do(req)
-
-	fmt.Printf("requ")
-	CheckErr(err)
+	res, err := http.DefaultClient.Do(req)
+	defer res.Body.Close()
+	if err != nil {
+		return nil, err
+	}
 
 	buf.Reset()
 	var echeck Err
 
 	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
-	io.Copy(ioutil.Discard, res.Body)
-	res.Body.Close()
-	CheckErr(err)
+	if err != nil {
+		res.Body.Close()
+		return nil, err
+	}
 
 	var v struct {
 		Records []Request
 	}
 	json.NewDecoder(buf).Decode(&v)
-
+	res.Body.Close()
 	return v.Records, nil
 
 }
@@ -78,7 +82,6 @@ func (c *Client) FilterAssets(table, opts string) []Asset {
 	buf := &bytes.Buffer{}
 	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true"
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
-	req.Close = true
 	defer req.Body.Close()
 	CheckErr(err)
 
@@ -123,6 +126,7 @@ func (c *Client) FilterComputers(table, opts string) []Computer {
 	var echeck Err
 
 	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
+	res.Body.Close()
 	CheckErr(err)
 
 	var v struct {
@@ -142,6 +146,7 @@ func (c *Client) FilterUsers(table, opts string) []User {
 	}
 	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true"
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
+	defer req.Body.Close()
 	CheckErr(err)
 
 	req.SetBasicAuth(c.Username, c.Password)
@@ -153,6 +158,7 @@ func (c *Client) FilterUsers(table, opts string) []User {
 	var echeck Err
 
 	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
+	res.Body.Close()
 	CheckErr(err)
 
 	var v struct {
@@ -177,10 +183,7 @@ func (c *Client) Update(table, opts string, body interface{}) {
 	CheckErr(err)
 
 	req, err := http.NewRequest(http.MethodPost, url, buf)
-	defer func() {
-		req.Body.Close()
-		io.Copy(ioutil.Discard, req.Body)
-	}()
+	defer req.Body.Close()
 	CheckErr(err)
 
 	req.Header.Set("Content-Type", "application/json")
