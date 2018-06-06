@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
 
 func CheckErr(err error) {
@@ -28,6 +29,18 @@ func (e Err) Error() string {
 
 type Client struct {
 	Username, Password, Instance string
+}
+
+var tr = &http.Transport{
+	MaxIdleConns:       10,
+	IdleConnTimeout:    30 * time.Second,
+	DisableCompression: true,
+}
+var httpClient = &http.Client{Transport: tr}
+var buf = &bytes.Buffer{}
+
+func (c *Client) create() {
+	panic("ERRORORORORORO")
 }
 
 func (c *Client) FilterRequests(table, opts string) ([]Request, error) {
