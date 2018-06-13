@@ -15,6 +15,16 @@ func CheckErr(err error) {
 	}
 }
 
+var tr = &http.Transport{
+	MaxIdleConns:       10,
+	IdleConnTimeout:    10 * time.Second,
+	DisableCompression: true,
+}
+var HTTPClient = &http.Client{
+	Transport: tr,
+	Timeout:   time.Duration(10 * time.Second),
+}
+
 type Err struct {
 	Err    string `json:"error"`
 	Reason string
@@ -31,50 +41,7 @@ type Client struct {
 	Username, Password, Instance string
 }
 
-var tr = &http.Transport{
-	MaxIdleConns:       10,
-	IdleConnTimeout:    30 * time.Second,
-	DisableCompression: true,
-}
-var httpClient = &http.Client{Transport: tr}
-var buf = &bytes.Buffer{}
-
-func (c *Client) create() {
-	panic("ERRORORORORORO")
-}
-
-func (c *Client) FilterRequests(table, opts string) ([]Request, error) {
-	buf := &bytes.Buffer{}
-	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true"
-	req, err := http.NewRequest(http.MethodGet, testurl, buf)
-	if err != nil {
-		return nil, err
-	}
-
-	req.SetBasicAuth(c.Username, c.Password)
-
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	buf.Reset()
-	var echeck Err
-
-	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
-	if err != nil {
-		return nil, err
-	}
-
-	var v struct {
-		Records []Request
-	}
-	json.NewDecoder(buf).Decode(&v)
-
-	return v.Records, nil
-
-}
-
-func (c *Client) FilterAssets(table, opts string) []Asset {
+func (c *Client) FilterRequests(table, opts string) []Request {
 	buf := &bytes.Buffer{}
 	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true"
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
@@ -82,7 +49,32 @@ func (c *Client) FilterAssets(table, opts string) []Asset {
 
 	req.SetBasicAuth(c.Username, c.Password)
 
-	res, err := http.DefaultClient.Do(req)
+	res, err := HTTPClient.Do(req)
+	CheckErr(err)
+	buf.Reset()
+	var echeck Err
+
+	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
+	CheckErr(err)
+
+	var v struct {
+		Records []Request
+	}
+	json.NewDecoder(buf).Decode(&v)
+
+	return v.Records
+
+}
+
+func (c *Client) FilterAssets(table, opts string) []Asset {
+	buf := &bytes.Buffer{}
+	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&displayvalue=true&sysparm_query=" + opts + "&displayvariables=true"
+	req, err := http.NewRequest(http.MethodGet, testurl, buf)
+	CheckErr(err)
+
+	req.SetBasicAuth(c.Username, c.Password)
+
+	res, err := HTTPClient.Do(req)
 	CheckErr(err)
 	buf.Reset()
 	var echeck Err
@@ -109,7 +101,7 @@ func (c *Client) FilterComputers(table, opts string) []Computer {
 
 	req.SetBasicAuth(c.Username, c.Password)
 
-	res, err := http.DefaultClient.Do(req)
+	res, err := HTTPClient.Do(req)
 	CheckErr(err)
 	buf.Reset()
 	var echeck Err
@@ -136,7 +128,7 @@ func (c *Client) FilterUsers(table, opts string) []User {
 
 	req.SetBasicAuth(c.Username, c.Password)
 
-	res, err := http.DefaultClient.Do(req)
+	res, err := HTTPClient.Do(req)
 	CheckErr(err)
 	buf.Reset()
 	var echeck Err
@@ -171,7 +163,7 @@ func (c *Client) Update(table, opts string, body interface{}) {
 
 	req.SetBasicAuth(c.Username, c.Password)
 
-	res, err := http.DefaultClient.Do(req)
+	res, err := HTTPClient.Do(req)
 	CheckErr(err)
 	fmt.Println(res.Body)
 }
