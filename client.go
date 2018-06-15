@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"regexp"
+	"strings"
 	"time"
 )
 
@@ -43,7 +45,7 @@ type Client struct {
 
 func (c *Client) FilterRequests(table, opts string) []Request {
 	buf := &bytes.Buffer{}
-	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true"
+	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true&displayvalue=true&sysparm_record_count=300"
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
 	CheckErr(err)
 
@@ -66,9 +68,60 @@ func (c *Client) FilterRequests(table, opts string) []Request {
 
 }
 
+func (c *Client) JSONBUILDER(table, opts string) string {
+	buf := &bytes.Buffer{}
+	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_record_count=300&sysparm_query=" + opts + "&displayvariables=true&displayvalue=true"
+	req, err := http.NewRequest(http.MethodGet, testurl, buf)
+	CheckErr(err)
+
+	req.SetBasicAuth(c.Username, c.Password)
+
+	res, err := HTTPClient.Do(req)
+	CheckErr(err)
+	buf.Reset()
+	var echeck Err
+
+	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
+	CheckErr(err)
+	item := buf.String()
+	//fmt.Printf(temp + "\n\n")
+
+	item = strings.TrimPrefix(item, "{\"records\":[{")
+	item = strings.TrimSuffix(item, "}]}")
+
+	item = strings.Split(item, "},{")[0]
+
+	var FirstCut = regexp.MustCompile(`:"([^,]*)("{1})`)
+	item = string(FirstCut.ReplaceAll([]byte(item), []byte("")))
+
+	var SecondCut = regexp.MustCompile(`:".*?(")`)
+	item = string(SecondCut.ReplaceAll([]byte(item), []byte("")))
+
+	var ThirdCut = regexp.MustCompile(`","`)
+	item = string(ThirdCut.ReplaceAll([]byte(item), []byte("\n")))
+
+	var FourthCut = regexp.MustCompile(`"[^\n]*\n`)
+	item = string(FourthCut.ReplaceAll([]byte(item), []byte("")))
+
+	var FifthCut = regexp.MustCompile(`"`)
+	item = string(FifthCut.ReplaceAll([]byte(item), []byte("")))
+
+	fmt.Println(item)
+	fmt.Println()
+
+	return " "
+
+}
+
+/*
+	FIRST CUT:
+	"__status","active","activity_due","additional_assignee_list","approval","approval_history","approval_set","assigned_to","assignment_group","backordered","billable","business_duration","business_service","calendar_duration","cat_item","caused_by","close_notes","closed_at","closed_by","cmdb_ci","comments","company","configuration_item","contact_type","context","contract","correlation_display","correlation_id","delivery_plan","delivery_task","description":"Connects to wireless networks, but shows no internet connectivity.","due_date","effort","end_date","escalation","estimated_delivery","expected_start","follow_up","group_list","impact","knowledge","location"
+
+*/
+
 func (c *Client) FilterAssets(table, opts string) []Asset {
 	buf := &bytes.Buffer{}
-	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&displayvalue=true&sysparm_query=" + opts + "&displayvariables=true"
+	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true&displayvalue=true&sysparm_record_count=300"
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
 	CheckErr(err)
 
@@ -95,7 +148,8 @@ func (c *Client) FilterComputers(table, opts string) []Computer {
 	if table == "" {
 		table = "cmdb_ci_computer"
 	}
-	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true"
+
+	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true&displayvalue=true&sysparm_record_count=300"
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
 	CheckErr(err)
 
@@ -122,7 +176,7 @@ func (c *Client) FilterUsers(table, opts string) []User {
 	if table == "" {
 		table = "cmdb_ci_computer"
 	}
-	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true"
+	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true&displayvalue=true&sysparm_record_count=300"
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
 	CheckErr(err)
 
