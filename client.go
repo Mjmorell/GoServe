@@ -269,8 +269,8 @@ func (c *Client) FilterInterface(table, opts string) map[string]string {
 	item = strings.TrimSuffix(item, "}]}")
 	item = strings.Replace(item, "[", "\"", -1)
 	item = strings.Replace(item, "]", "\"", -1)
-	fmt.Println(item)
-	fmt.Printf("\n\n")
+	//fmt.Println(item)
+	//fmt.Printf("\n\n")
 	datas := make(map[string]string)
 	itemArray := strings.Split(item, "\",\"")
 
@@ -278,7 +278,7 @@ func (c *Client) FilterInterface(table, opts string) map[string]string {
 		elem = strings.Replace(elem, "\"", "", -1)
 		elemArray := strings.SplitN(elem, ":", 2)
 		datas[elemArray[0]] = elemArray[1]
-		fmt.Printf("%20s = %s\n", elemArray[0], elemArray[1])
+		//fmt.Printf("%20s = %s\n", elemArray[0], elemArray[1])
 	}
 	return datas
 }
