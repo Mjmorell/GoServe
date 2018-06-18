@@ -191,6 +191,31 @@ func (c *Client) FilterComputers(table, opts string) []Computer {
 	return v.Records
 }
 
+func (c *Client) FilterIncidents(table, opts string) []Incident {
+	buf := &bytes.Buffer{}
+
+	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true&displayvalue=true&sysparm_record_count=300"
+	req, err := http.NewRequest(http.MethodGet, testurl, buf)
+	CheckErr(err)
+
+	req.SetBasicAuth(c.Username, c.Password)
+
+	res, err := HTTPClient.Do(req)
+	CheckErr(err)
+	buf.Reset()
+	var echeck Err
+
+	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
+	CheckErr(err)
+
+	var v struct {
+		Records []Incident
+	}
+	json.NewDecoder(buf).Decode(&v)
+
+	return v.Records
+}
+
 func (c *Client) FilterUsers(table, opts string) []User {
 	buf := &bytes.Buffer{}
 	if table == "" {
@@ -216,6 +241,46 @@ func (c *Client) FilterUsers(table, opts string) []User {
 	json.NewDecoder(buf).Decode(&v)
 
 	return v.Records
+}
+
+//
+//
+// THIS RETURNS A MAP OF EACH ITEM, almost like a struct was built for it. THIS ONLY WORKS WITH ONE TICKET/ITEM return at a time.
+// If more than one is returned, the last element is used.
+func (c *Client) FilterInterface(table, opts string) map[string]string {
+	buf := &bytes.Buffer{}
+	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_record_count=1&sysparm_query=" + opts + "&displayvariables=true&displayvalue=true"
+	req, err := http.NewRequest(http.MethodGet, testurl, buf)
+	CheckErr(err)
+
+	req.SetBasicAuth(c.Username, c.Password)
+
+	res, err := HTTPClient.Do(req)
+	CheckErr(err)
+	buf.Reset()
+	var echeck Err
+
+	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
+	CheckErr(err)
+	item := buf.String()
+	//fmt.Printf(temp + "\n\n")
+
+	item = strings.TrimPrefix(item, "{\"records\":[{")
+	item = strings.TrimSuffix(item, "}]}")
+	item = strings.Replace(item, "[", "\"", -1)
+	item = strings.Replace(item, "]", "\"", -1)
+	fmt.Println(item)
+	fmt.Printf("\n\n")
+	datas := make(map[string]string)
+	itemArray := strings.Split(item, "\",\"")
+
+	for _, elem := range itemArray {
+		elem = strings.Replace(elem, "\"", "", -1)
+		elemArray := strings.SplitN(elem, ":", 2)
+		datas[elemArray[0]] = elemArray[1]
+		fmt.Printf("%20s = %s\n", elemArray[0], elemArray[1])
+	}
+	return datas
 }
 
 func (c *Client) Update(table, opts string, body interface{}) {
