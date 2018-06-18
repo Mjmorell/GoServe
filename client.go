@@ -106,9 +106,29 @@ func (c *Client) JSONBUILDER(table, opts string) string {
 	var FifthCut = regexp.MustCompile(`"`)
 	item = string(FifthCut.ReplaceAll([]byte(item), []byte("")))
 
-	fmt.Println(item)
-	fmt.Println()
+	var Variables = regexp.MustCompile(`(variables).*`)
+	item = string(Variables.ReplaceAllStringFunc(item, func(m string) string {
+		return m[:9] + "\n" + m[9:]
+	}))
 
+	jsonList := strings.Split(item, "\n")
+
+	var SingleWord = regexp.MustCompile(`_(.{1})`)
+	item = SingleWord.ReplaceAllStringFunc(item, func(m string) string {
+		return strings.ToUpper(m)[1:]
+	})
+
+	var FrontUp = regexp.MustCompile(`\n.`)
+	item = FrontUp.ReplaceAllStringFunc(item, func(m string) string {
+		return strings.ToUpper(m)
+	})
+
+	regList := strings.Split(item, "\n")
+	//fmt.Printf(item)
+
+	for i, each := range jsonList {
+		fmt.Printf("%-40s string          `json:\"%s,omitempty\"`\n", regList[i], each)
+	}
 	return " "
 
 }
