@@ -216,7 +216,7 @@ func (c *Client) FilterIncidents(table, opts string) []Incident {
 	return v.Records
 }
 
-func (c *Client) FilterUsers(table, opts string) []User {
+func (c *Client) FilterUsers(table, opts string) ([]User, error) {
 	buf := &bytes.Buffer{}
 	if table == "" {
 		table = "cmdb_ci_computer"
@@ -233,14 +233,16 @@ func (c *Client) FilterUsers(table, opts string) []User {
 	var echeck Err
 
 	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
-	CheckErr(err)
+	if err != nil {
+		return nil, err
+	}
 
 	var v struct {
 		Records []User
 	}
 	json.NewDecoder(buf).Decode(&v)
 
-	return v.Records
+	return v.Records, nil
 }
 
 //
