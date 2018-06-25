@@ -19,7 +19,7 @@ func CheckErr(err error) {
 
 var tr = &http.Transport{
 	MaxIdleConns:       10,
-	IdleConnTimeout:    10 * time.Second,
+	IdleConnTimeout:    30 * time.Second,
 	DisableCompression: true,
 }
 var HTTPClient = &http.Client{
