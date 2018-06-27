@@ -133,11 +133,50 @@ func (c *Client) JSONBUILDER(table, opts string) string {
 
 }
 
-/*
-	FIRST CUT:
-	"__status","active","activity_due","additional_assignee_list","approval","approval_history","approval_set","assigned_to","assignment_group","backordered","billable","business_duration","business_service","calendar_duration","cat_item","caused_by","close_notes","closed_at","closed_by","cmdb_ci","comments","company","configuration_item","contact_type","context","contract","correlation_display","correlation_id","delivery_plan","delivery_task","description":"Connects to wireless networks, but shows no internet connectivity.","due_date","effort","end_date","escalation","estimated_delivery","expected_start","follow_up","group_list","impact","knowledge","location"
+func (c *Client) DATAEXTRACTOR(table, opts string) string {
+	buf := &bytes.Buffer{}
+	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_record_count=300&sysparm_query=" + opts + "&displayvariables=true&displayvalue=true"
+	req, err := http.NewRequest(http.MethodGet, testurl, buf)
+	CheckErr(err)
 
-*/
+	req.SetBasicAuth(c.Username, c.Password)
+
+	res, err := HTTPClient.Do(req)
+	CheckErr(err)
+	buf.Reset()
+	var echeck Err
+
+	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
+	CheckErr(err)
+	item := buf.String()
+
+	item = strings.TrimPrefix(item, "{\"records\":[{")
+	item = strings.TrimSuffix(item, "}]}")
+
+	item = strings.Split(item, "},{")[0]
+
+	var ThirdCut = regexp.MustCompile(`","`)
+	item = string(ThirdCut.ReplaceAll([]byte(item), []byte("\n")))
+
+	var FourthCut = regexp.MustCompile(`":`)
+	item = string(FourthCut.ReplaceAll([]byte(item), []byte("|")))
+
+	var FifthCut = regexp.MustCompile(`"`)
+	item = string(FifthCut.ReplaceAll([]byte(item), []byte("")))
+
+	regList := strings.Split(item, "\n")
+	//fmt.Printf(item)
+	for _, each := range regList {
+		temp := strings.Split(each, "|")
+		if len(temp) > 1 {
+			fmt.Printf("%40s -- %s\n", temp[0], temp[1])
+		} else {
+			fmt.Printf("%40s --\n", temp[0])
+		}
+	}
+	return ""
+
+}
 
 func (c *Client) FilterAssets(table, opts string) []Asset {
 	buf := &bytes.Buffer{}
@@ -165,10 +204,6 @@ func (c *Client) FilterAssets(table, opts string) []Asset {
 
 func (c *Client) FilterComputers(table, opts string) []Computer {
 	buf := &bytes.Buffer{}
-	if table == "" {
-		table = "cmdb_ci_computer"
-	}
-
 	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true&displayvalue=true&sysparm_record_count=300"
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
 	CheckErr(err)
@@ -193,7 +228,6 @@ func (c *Client) FilterComputers(table, opts string) []Computer {
 
 func (c *Client) FilterIncidents(table, opts string) []Incident {
 	buf := &bytes.Buffer{}
-
 	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true&displayvalue=true&sysparm_record_count=300"
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
 	CheckErr(err)
@@ -218,9 +252,6 @@ func (c *Client) FilterIncidents(table, opts string) []Incident {
 
 func (c *Client) FilterUsers(table, opts string) ([]User, error) {
 	buf := &bytes.Buffer{}
-	if table == "" {
-		table = "cmdb_ci_computer"
-	}
 	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true&displayvalue=true&sysparm_record_count=300"
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
 	CheckErr(err)
@@ -239,6 +270,32 @@ func (c *Client) FilterUsers(table, opts string) ([]User, error) {
 
 	var v struct {
 		Records []User
+	}
+	json.NewDecoder(buf).Decode(&v)
+
+	return v.Records, nil
+}
+
+func (c *Client) FilterSCTasks(table, opts string) ([]sctask, error) {
+	buf := &bytes.Buffer{}
+	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true&displayvalue=true&sysparm_record_count=300"
+	req, err := http.NewRequest(http.MethodGet, testurl, buf)
+	CheckErr(err)
+
+	req.SetBasicAuth(c.Username, c.Password)
+
+	res, err := HTTPClient.Do(req)
+	CheckErr(err)
+	buf.Reset()
+	var echeck Err
+
+	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
+	if err != nil {
+		return nil, err
+	}
+
+	var v struct {
+		Records []sctask
 	}
 	json.NewDecoder(buf).Decode(&v)
 

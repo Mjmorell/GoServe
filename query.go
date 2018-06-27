@@ -25,10 +25,12 @@ func OR() string {
 }
 
 func IS(str string) string {
+	str = strings.Replace(str, " ", "%20", -1)
 	return "=" + str
 }
 
 func ISNOT(str string) string {
+	str = strings.Replace(str, " ", "%20", -1)
 	return "!=" + str
 }
 
@@ -49,18 +51,22 @@ func ISNOTEMPTY() string {
 }
 
 func ISLESSTHAN(str string) string {
+	str = strings.Replace(str, " ", "%20", -1)
 	return "<" + str
 }
 
 func ISLESSTHANOREQUALS(str string) string {
+	str = strings.Replace(str, " ", "%20", -1)
 	return "<=" + str
 }
 
 func ISGREATERTHAN(str string) string {
+	str = strings.Replace(str, " ", "%20", -1)
 	return ">" + str
 }
 
 func ISGREATERTHANOREQUALS(str string) string {
+	str = strings.Replace(str, " ", "%20", -1)
 	return ">=" + str
 }
 
@@ -73,10 +79,12 @@ func ISANYTHING() string {
 }
 
 func ISSAMEAS(str string) string {
+	str = strings.Replace(str, " ", "%20", -1)
 	return "SAMEAS" + str
 }
 
 func ISDIFFERENTFROM(str string) string {
+	str = strings.Replace(str, " ", "%20", -1)
 	return "NSAMEAS" + str
 }
 
