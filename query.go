@@ -91,6 +91,9 @@ func ISDIFFERENTFROM(str string) string {
 func ORDERBY(str string) string {
 	return "^ORDERBY" + str
 }
+func ORDERBYDESC(str string) string {
+	return "^ORDERBYDESC" + str
+}
 
 func ISLIKE(str string) string {
 	return "LIKE" + str
