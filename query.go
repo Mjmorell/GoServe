@@ -99,3 +99,41 @@ func ISLIKE(str string) string {
 func ISNOTLIKE(str string) string {
 	return "NOT%20LIKE" + str
 }
+
+func ON(str string) string {
+	return "ON" + str
+}
+
+func NOTON(str string) string {
+	return "NOTON" + str
+}
+
+func BEFORE(str string) string {
+	return "<" + str
+}
+
+func ATORBEFORE(str string) string {
+	return "<=" + str
+}
+
+func AFTER(str string) string {
+	return ">" + str
+}
+
+func ATORAFTER(str string) string {
+	return ">=" + str
+}
+
+func BETWEEN(str string) string {
+	return "BETWEEN" + str
+}
+
+//MORETHAN is for date-type fields only!
+func MORETHAN(str string) string {
+	return "MORETHAN" + str
+}
+
+//LESSTHAN is for date-type fields only!
+func LESSTHAN(str string) string {
+	return "LESSTHAN" + str
+}

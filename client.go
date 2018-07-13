@@ -135,7 +135,7 @@ func (c *Client) JSONBUILDER(table, opts string) string {
 
 func (c *Client) DATAEXTRACTOR(table, opts string) string {
 	buf := &bytes.Buffer{}
-	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_record_count=300&sysparm_query=" + opts + "&displayvariables=true&displayvalue=true"
+	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_record_count=300&sysparm_query=" + opts + "&displayvariables=true&displayvalue=true&sysparm_fields=comments"
 	req, err := http.NewRequest(http.MethodGet, testurl, buf)
 	CheckErr(err)
 
@@ -296,6 +296,58 @@ func (c *Client) FilterSCTasks(table, opts string) ([]sctask, error) {
 
 	var v struct {
 		Records []sctask
+	}
+	json.NewDecoder(buf).Decode(&v)
+
+	return v.Records, nil
+}
+
+func (c *Client) FilterHistory(table, opts string) ([]History, error) {
+	buf := &bytes.Buffer{}
+	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true&displayvalue=true&sysparm_record_count=300"
+	req, err := http.NewRequest(http.MethodGet, testurl, buf)
+	CheckErr(err)
+
+	req.SetBasicAuth(c.Username, c.Password)
+
+	res, err := HTTPClient.Do(req)
+	CheckErr(err)
+	buf.Reset()
+	var echeck Err
+
+	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
+	if err != nil {
+		return nil, err
+	}
+
+	var v struct {
+		Records []History
+	}
+	json.NewDecoder(buf).Decode(&v)
+
+	return v.Records, nil
+}
+
+func (c *Client) FilterSysAudit(table, opts string) ([]sysAudit, error) {
+	buf := &bytes.Buffer{}
+	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true&displayvalue=true&sysparm_record_count=300"
+	req, err := http.NewRequest(http.MethodGet, testurl, buf)
+	CheckErr(err)
+
+	req.SetBasicAuth(c.Username, c.Password)
+
+	res, err := HTTPClient.Do(req)
+	CheckErr(err)
+	buf.Reset()
+	var echeck Err
+
+	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
+	if err != nil {
+		return nil, err
+	}
+
+	var v struct {
+		Records []sysAudit
 	}
 	json.NewDecoder(buf).Decode(&v)
 
