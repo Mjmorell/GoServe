@@ -441,3 +441,28 @@ func (c *Client) Create(table string, body interface{}) {
 	CheckErr(err)
 	fmt.Println(res.Body)
 }
+
+func (c *Client) FilterRequestsLITERAL(table, opts string) []Request {
+	buf := &bytes.Buffer{}
+	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts + "&displayvariables=true&sysparm_record_count=300"
+	req, err := http.NewRequest(http.MethodGet, testurl, buf)
+	CheckErr(err)
+
+	req.SetBasicAuth(c.Username, c.Password)
+
+	res, err := HTTPClient.Do(req)
+	CheckErr(err)
+	buf.Reset()
+	var echeck Err
+
+	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
+	CheckErr(err)
+
+	var v struct {
+		Records []Request
+	}
+	json.NewDecoder(buf).Decode(&v)
+
+	return v.Records
+
+}
