@@ -418,7 +418,7 @@ func (c *Client) Update(table, opts string, body interface{}) {
 	fmt.Println(res.Body)
 }
 
-func (c *Client) Create(table, opts string, body interface{}) {
+func (c *Client) Create(table string, body interface{}) {
 
 	//err := json.NewEncoder(buf).Encode(body)
 	//CheckErr(err)
