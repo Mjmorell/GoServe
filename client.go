@@ -438,8 +438,10 @@ func (c *Client) Create(table string, body interface{}) {
 	req.SetBasicAuth(c.Username, c.Password)
 
 	res, err := HTTPClient.Do(req)
+	newBuf := new(bytes.Buffer)
+	newBuf.ReadFrom(res.Body)
 	CheckErr(err)
-	fmt.Println(res.Body)
+	fmt.Println(newBuf.String())
 }
 
 func (c *Client) FilterRequestsLITERAL(table, opts string) []Request {
