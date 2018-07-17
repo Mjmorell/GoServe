@@ -417,3 +417,27 @@ func (c *Client) Update(table, opts string, body interface{}) {
 	CheckErr(err)
 	fmt.Println(res.Body)
 }
+
+func (c *Client) Create(table, opts string, body interface{}) {
+
+	//err := json.NewEncoder(buf).Encode(body)
+	//CheckErr(err)
+	url := "https://" + c.Instance + table + ".do?JSON&sysparm_action=insert"
+	//fmt.Printf(testurl + "\n")
+
+	buf := &bytes.Buffer{}
+
+	err := json.NewEncoder(buf).Encode(body)
+	CheckErr(err)
+
+	req, err := http.NewRequest(http.MethodPost, url, buf)
+	CheckErr(err)
+
+	req.Header.Set("Content-Type", "application/json")
+
+	req.SetBasicAuth(c.Username, c.Password)
+
+	res, err := HTTPClient.Do(req)
+	CheckErr(err)
+	fmt.Println(res.Body)
+}
