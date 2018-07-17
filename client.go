@@ -422,7 +422,7 @@ func (c *Client) Create(table string, body interface{}) {
 
 	//err := json.NewEncoder(buf).Encode(body)
 	//CheckErr(err)
-	url := "https://" + c.Instance + table + ".do?JSON&sysparm_action=insert"
+	url := "https://" + c.Instance + table + ".do?JSONv2&sysparm_action=insert"
 	//fmt.Printf(testurl + "\n")
 
 	buf := &bytes.Buffer{}
