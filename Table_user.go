@@ -1,5 +1,6 @@
 package goserve
 
+//User is for the User table
 type User struct {
 	Status             string `json:"__status,omitempty"`
 	AccRoles           string `json:"accumulated_roles,omitempty"`

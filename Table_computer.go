@@ -1,5 +1,6 @@
 package goserve
 
+//Computer is for the Computer table
 type Computer struct {
 	Status                string `json:"__status,omitempty"`
 	Asset                 string `json:"asset,omitempty"`
@@ -120,7 +121,7 @@ type Computer struct {
 	UWarrantyType         string `json:"u_warranty_type,omitempty"`
 	Unverified            string `json:"unverified,omitempty"`
 	UsedFor               string `json:"used_for,omitempty"`
-	Variables             string `json:"variables":[],"vendor,omitempty"`
+	Vendor                string `json:"vendor,omitempty"`
 	Virtual               string `json:"virtual,omitempty"`
 	WarrantyExpiration    string `json:"warranty_expiration,omitempty"`
 }

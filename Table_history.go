@@ -1,5 +1,6 @@
 package goserve
 
+//History is for the History table
 type History struct {
 	DateFormat         string `json:"date_format,omitempty"`
 	Domain             string `json:"domain,omitempty"`

@@ -1,5 +1,6 @@
 package goserve
 
+//Incident is for the Incident table
 type Incident struct {
 	Active                    string `json:"active,omitempty"`
 	ActivityDue               string `json:"activity_due,omitempty"`
@@ -14,7 +15,7 @@ type Incident struct {
 	BusinessStc               string `json:"business_stc,omitempty"`
 	CalendarDuration          string `json:"calendar_duration,omitempty"`
 	CalendarStc               string `json:"calendar_stc,omitempty"`
-	CallerId                  string `json:"caller_id,omitempty"`
+	CallerID                  string `json:"caller_id,omitempty"`
 	Category                  string `json:"category,omitempty"`
 	CausedBy                  string `json:"caused_by,omitempty"`
 	CloseCode                 string `json:"close_code,omitempty"`
@@ -27,7 +28,7 @@ type Incident struct {
 	ContactType               string `json:"contact_type,omitempty"`
 	Contract                  string `json:"contract,omitempty"`
 	CorrelationDisplay        string `json:"correlation_display,omitempty"`
-	CorrelationId             string `json:"correlation_id,omitempty"`
+	CorrelationID             string `json:"correlation_id,omitempty"`
 	DeliveryPlan              string `json:"delivery_plan,omitempty"`
 	DeliveryTask              string `json:"delivery_task,omitempty"`
 	Description               string `json:"description,omitempty"`
@@ -42,7 +43,7 @@ type Incident struct {
 	IncidentState             string `json:"incident_state,omitempty"`
 	Knowledge                 string `json:"knowledge,omitempty"`
 	Location                  string `json:"location,omitempty"`
-	MadeSla                   string `json:"made_sla,omitempty"`
+	MadeSLA                   string `json:"made_sla,omitempty"`
 	Notify                    string `json:"notify,omitempty"`
 	Number                    string `json:"number,omitempty"`
 	OpenedAt                  string `json:"opened_at,omitempty"`
@@ -50,7 +51,7 @@ type Incident struct {
 	Order                     string `json:"order,omitempty"`
 	Parent                    string `json:"parent,omitempty"`
 	Priority                  string `json:"priority,omitempty"`
-	ProblemId                 string `json:"problem_id,omitempty"`
+	ProblemID                 string `json:"problem_id,omitempty"`
 	ReassignmentCount         string `json:"reassignment_count,omitempty"`
 	RemainingEffort           string `json:"remaining_effort,omitempty"`
 	RequestedFor              string `json:"requested_for,omitempty"`
@@ -58,7 +59,7 @@ type Incident struct {
 	Severity                  string `json:"severity,omitempty"`
 	ShortDescription          string `json:"short_description,omitempty"`
 	Skills                    string `json:"skills,omitempty"`
-	SlaDue                    string `json:"sla_due,omitempty"`
+	SLADue                    string `json:"sla_due,omitempty"`
 	StartDate                 string `json:"start_date,omitempty"`
 	State                     string `json:"state,omitempty"`
 	Subcategory               string `json:"subcategory,omitempty"`
@@ -66,7 +67,7 @@ type Incident struct {
 	SysCreatedBy              string `json:"sys_created_by,omitempty"`
 	SysCreatedOn              string `json:"sys_created_on,omitempty"`
 	SysDomain                 string `json:"sys_domain,omitempty"`
-	SysId                     string `json:"sys_id,omitempty"`
+	SysID                     string `json:"sys_id,omitempty"`
 	SysModCount               string `json:"sys_mod_count,omitempty"`
 	SysTags                   string `json:"sys_tags,omitempty"`
 	SysUpdatedBy              string `json:"sys_updated_by,omitempty"`
@@ -90,12 +91,12 @@ type Incident struct {
 	UEmailNotification        string `json:"u_email_notification,omitempty"`
 	UEscalatedAt              string `json:"u_escalated_at,omitempty"`
 	UEscalatedBy              string `json:"u_escalated_by,omitempty"`
-	UExternalSysId            string `json:"u_external_sys_id,omitempty"`
+	UExternalSysID            string `json:"u_external_sys_id,omitempty"`
 	UFinalMetric              string `json:"u_final_metric,omitempty"`
 	UFinalMetricCode          string `json:"u_final_metric_code,omitempty"`
 	UFinalPerformance         string `json:"u_final_performance,omitempty"`
 	UFundingDepartment        string `json:"u_funding_department,omitempty"`
-	UJiraId                   string `json:"u_jira_id,omitempty"`
+	UJiraID                   string `json:"u_jira_id,omitempty"`
 	UOrganization             string `json:"u_organization,omitempty"`
 	UOwner                    string `json:"u_owner,omitempty"`
 	UProduct                  string `json:"u_product,omitempty"`

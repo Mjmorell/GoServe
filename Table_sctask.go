@@ -1,7 +1,8 @@
 package goserve
 
-type sctask struct {
-	active                    string `json:"active,omitempty"`
+//SCTask is for the SCTask table
+type SCTask struct {
+	Active                    string `json:"active,omitempty"`
 	ActivityDue               string `json:"activity_due,omitempty"`
 	AdditionalAssigneeList    string `json:"additional_assignee_list,omitempty"`
 	Approval                  string `json:"approval,omitempty"`
@@ -23,7 +24,7 @@ type sctask struct {
 	ContactType               string `json:"contact_type,omitempty"`
 	Contract                  string `json:"contract,omitempty"`
 	CorrelationDisplay        string `json:"correlation_display,omitempty"`
-	CorrelationId             string `json:"correlation_id,omitempty"`
+	CorrelationID             string `json:"correlation_id,omitempty"`
 	DeliveryPlan              string `json:"delivery_plan,omitempty"`
 	DeliveryTask              string `json:"delivery_task,omitempty"`
 	Description               string `json:"description,omitempty"`
@@ -37,7 +38,7 @@ type sctask struct {
 	Impact                    string `json:"impact,omitempty"`
 	Knowledge                 string `json:"knowledge,omitempty"`
 	Location                  string `json:"location,omitempty"`
-	MadeSla                   string `json:"made_sla,omitempty"`
+	MadeSLA                   string `json:"made_sla,omitempty"`
 	Number                    string `json:"number,omitempty"`
 	OpenedAt                  string `json:"opened_at,omitempty"`
 	OpenedBy                  string `json:"opened_by,omitempty"`
@@ -52,14 +53,14 @@ type sctask struct {
 	ScCatalog                 string `json:"sc_catalog,omitempty"`
 	ShortDescription          string `json:"short_description,omitempty"`
 	Skills                    string `json:"skills,omitempty"`
-	SlaDue                    string `json:"sla_due,omitempty"`
+	SLADue                    string `json:"sla_due,omitempty"`
 	StartDate                 string `json:"start_date,omitempty"`
 	State                     string `json:"state,omitempty"`
 	SysClassName              string `json:"sys_class_name,omitempty"`
 	SysCreatedBy              string `json:"sys_created_by,omitempty"`
 	SysCreatedOn              string `json:"sys_created_on,omitempty"`
 	SysDomain                 string `json:"sys_domain,omitempty"`
-	SysId                     string `json:"sys_id,omitempty"`
+	SysID                     string `json:"sys_id,omitempty"`
 	SysModCount               string `json:"sys_mod_count,omitempty"`
 	SysTags                   string `json:"sys_tags,omitempty"`
 	SysUpdatedBy              string `json:"sys_updated_by,omitempty"`
@@ -82,12 +83,12 @@ type sctask struct {
 	UDueDateChangeCount       string `json:"u_due_date_change_count,omitempty"`
 	UEscalatedAt              string `json:"u_escalated_at,omitempty"`
 	UEscalatedBy              string `json:"u_escalated_by,omitempty"`
-	UExternalSysId            string `json:"u_external_sys_id,omitempty"`
+	UExternalSysID            string `json:"u_external_sys_id,omitempty"`
 	UFinalMetric              string `json:"u_final_metric,omitempty"`
 	UFinalMetricCode          string `json:"u_final_metric_code,omitempty"`
 	UFinalPerformance         string `json:"u_final_performance,omitempty"`
 	UFundingDepartment        string `json:"u_funding_department,omitempty"`
-	UJiraId                   string `json:"u_jira_id,omitempty"`
+	UJiraID                   string `json:"u_jira_id,omitempty"`
 	UOrganization             string `json:"u_organization,omitempty"`
 	UOwner                    string `json:"u_owner,omitempty"`
 	UProduct                  string `json:"u_product,omitempty"`

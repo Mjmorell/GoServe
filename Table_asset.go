@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 )
 
+//Asset is for the Asset table
 type Asset struct {
 	Status                    string      `json:"__status,omitempty"`
 	AquisitionMethod          string      `json:"acquisition_method,omitempty"`
@@ -74,7 +75,7 @@ type Asset struct {
 	SysUpdatedBy              string      `json:"sys_updated_by,omitempty"`
 	SysUpdatedOn              string      `json:"sys_updated_on,omitempty"`
 	ActiveDirectoryOu         string      `json:"u_active_directory_ou,omitempty"`
-	AppleModelId              string      `json:"u_apple_model_id,omitempty"`
+	AppleModelID              string      `json:"u_apple_model_id,omitempty"`
 	AuditedBy                 string      `json:"u_audited_by,omitempty"`
 	AvEquipmentType           string      `json:"u_av_equipment_type,omitempty"`
 	Bin                       string      `json:"u_bin,omitempty"`
@@ -85,14 +86,14 @@ type Asset struct {
 	ComputerName              string      `json:"u_computer_name,omitempty"`
 	CurrentLumenBrightness    int         `json:"u_current_lumen_brightness,omitempty"`
 	DeviceAdMembership        string      `json:"u_device_ad_membership,omitempty"`
-	DeviceId                  string      `json:"u_device_id,omitempty"`
+	DeviceID                  string      `json:"u_device_id,omitempty"`
 	DiscountAmount            json.Number `json:"u_discount_amt,omitempty"`
 	Donated                   string      `json:"u_donated,omitempty"`
 	DonatedTo                 string      `json:"u_donated_to,omitempty"`
 	FinalPrice                json.Number `json:"u_final_price,omitempty"`
 	Frequency                 string      `json:"u_frequency,omitempty"`
 	IndividualDiscount        string      `json:"u_indiv_discount,omitempty"`
-	IpAddress                 string      `json:"u_ip_address,omitempty"`
+	IPAddress                 string      `json:"u_ip_address,omitempty"`
 	LampLife                  string      `json:"u_lamp_life,omitempty"`
 	LampLifeChecked           string      `json:"u_lamp_life_checked,omitempty"`
 	LaptopAssignmentNumber    string      `json:"u_laptop_assignment_number,omitempty"`
@@ -113,7 +114,7 @@ type Asset struct {
 	OperatingSystem           string      `json:"u_operating_system,omitempty"`
 	OrderedBy                 string      `json:"u_ordered_by,omitempty"`
 	PartNumber                string      `json:"u_part_number,omitempty"`
-	PharosStationId           string      `json:"u_pharos_station_id,omitempty"`
+	PharosStationID           string      `json:"u_pharos_station_id,omitempty"`
 	PrevAssignedTo            string      `json:"u_previous_assigned_to,omitempty"`
 	PrintSalesReceipt         string      `json:"u_print_sales_receipt,omitempty"`
 	ProfitCenterName          string      `json:"u_profit_center_name,omitempty"`
@@ -140,6 +141,7 @@ type Asset struct {
 	WorkNotes                 string      `json:"work_notes,omitempty"`
 }
 
+//AssetUpdate is deprecated, only for legacy supported programs
 type AssetUpdate struct {
 	AssignedTo      string      `json:"assigned_to,omitempty"`
 	Comments        string      `json:"comments,omitempty"`

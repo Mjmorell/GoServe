@@ -1,6 +1,7 @@
 package goserve
 
-type sysAudit struct {
+//SysAudit is for the SysAudit table
+type SysAudit struct {
 	Documentkey        string `json:"documentkey,omitempty"`
 	Fieldname          string `json:"fieldname,omitempty"`
 	InternalCheckpoint string `json:"internal_checkpoint,omitempty"`

@@ -1,5 +1,6 @@
 package goserve
 
+//Request is for the Request table
 type Request struct {
 	Status                    string `json:"__status,omitempty"`
 	Active                    string `json:"active,omitempty"`
@@ -144,7 +145,7 @@ type Request struct {
 	USerialNumber             string `json:"u_serial_number,omitempty"`
 	USlaType                  string `json:"u_sla_type,omitempty"`
 	USoftware                 string `json:"u_software,omitempty"`
-	USubstate                 string `json:"u_substate,omitempty"`
+	Substate                  string `json:"u_substate,omitempty"`
 	UTaskScheduler            string `json:"u_task_scheduler,omitempty"`
 	UTemplate                 string `json:"u_template,omitempty"`
 	UUrl                      string `json:"u_url,omitempty"`
