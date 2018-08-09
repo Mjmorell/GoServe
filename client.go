@@ -45,7 +45,7 @@ type Client struct {
 }
 
 //PULL Pulls data from SN and returns an array of maps for each item/ticket
-func (c *Client) PULL(table, opts string, cfg ...map[string]string) []map[string]string {
+func (c *Client) PULL(table, opts string, cfg ...map[string]string) ([]map[string]string, int) {
 	displayVariables := "true"
 	displayValue := "true"
 	recordCount := "300"
@@ -92,7 +92,7 @@ func (c *Client) PULL(table, opts string, cfg ...map[string]string) []map[string
 	//	fmt.Printf("\n\n-- %d --\n%s", k, vv)
 	//}
 
-	return v.Records
+	return v.Records, len(v.Records)
 }
 
 //PUSH Pushes data to SN

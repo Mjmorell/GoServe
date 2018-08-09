@@ -1,5 +1,7 @@
 package goserve
 
+import "fmt"
+
 /************************************************
 	MIT License
 	Details viewable in the Github Directory
@@ -38,7 +40,8 @@ func example() {
 
 	//New Method:
 
-	original := client.PULL("u_computer_support", Filter("number")+IS("CS0012345"), cfg)
+	original, num := client.PULL("u_computer_support", Filter("number")+IS("CS0012345"), cfg)
+	fmt.Printf("The number of tickets returned by PULL is %d", num)
 	pushable := make(map[string]string)
 	pushable["description"] = original[0]["description"]
 	pushable["assigned_to"] = original[0]["assigned_to"]
