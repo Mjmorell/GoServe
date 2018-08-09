@@ -35,12 +35,9 @@ func example() {
 
 	client := Client{Username: "user", Password: "password", Instance: "instance.service-now.com/"}
 
-	cfg := make(map[string]string) // New feature for changing certain parameters in the pull.
-	cfg["displayValue"] = "false"
-
 	//New Method:
 
-	original, num := client.PULL("u_computer_support", Filter("number")+IS("CS0012345"), cfg)
+	original, num := client.PULL("u_computer_support", Filter("number")+IS("CS0012345"))
 	fmt.Printf("The number of tickets returned by PULL is %d", num)
 	pushable := make(map[string]string)
 	pushable["description"] = original[0]["description"]

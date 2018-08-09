@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 )
@@ -45,58 +46,70 @@ type Client struct {
 }
 
 //PULL Pulls data from SN and returns an array of maps for each item/ticket
-func (c *Client) PULL(table, opts string, cfg ...map[string]string) ([]map[string]string, int) {
-	displayVariables := "true"
-	displayValue := "true"
-	recordCount := "300"
-	if len(cfg) > 0 {
-		if val, ok := cfg[0]["displayVariables"]; ok {
-			displayVariables = val
-		}
-		if val, ok := cfg[0]["displayValue"]; ok {
-			displayValue = val
-		}
-		if val, ok := cfg[0]["recordCount"]; ok {
-			recordCount = val
-		}
-	}
+func (c *Client) PULL(table, opts string) ([]map[string]string, int) {
 
-	buf := &bytes.Buffer{}
-	testurl := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts +
-		"&displayvariables=" + displayVariables +
-		"&displayvalue=" + displayValue +
-		"&sysparm_record_count=" + recordCount
+	bufDT := &bytes.Buffer{}
+	bufDF := &bytes.Buffer{}
+	displayTrue := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts +
+		"&displayvariables=true" +
+		"&displayvalue=true" +
+		"&sysparm_record_count=true"
+	displayFalse := "https://" + c.Instance + table + ".do?JSON&sysparm_action=getRecords&sysparm_query=" + opts +
+		"&displayvariables=true" +
+		"&displayvalue=false" +
+		"&sysparm_record_count=true"
 
-	req, err := http.NewRequest(http.MethodGet, testurl, buf)
+	reqDT, err := http.NewRequest(http.MethodGet, displayTrue, bufDT)
+	checkErr(err)
+	reqDF, err := http.NewRequest(http.MethodGet, displayFalse, bufDF)
 	checkErr(err)
 
-	req.SetBasicAuth(c.Username, c.Password)
+	reqDT.SetBasicAuth(c.Username, c.Password)
+	reqDF.SetBasicAuth(c.Username, c.Password)
 
-	res, err := httpClient.Do(req)
+	resDT, err := httpClient.Do(reqDT)
 	checkErr(err)
-	buf.Reset()
+	resDF, err := httpClient.Do(reqDF)
+	checkErr(err)
+
+	bufDT.Reset()
+	bufDF.Reset()
+
 	var echeck errStruct
 
-	err = json.NewDecoder(io.TeeReader(res.Body, buf)).Decode(&echeck)
+	err = json.NewDecoder(io.TeeReader(resDT.Body, bufDT)).Decode(&echeck)
+	checkErr(err)
+	err = json.NewDecoder(io.TeeReader(resDF.Body, bufDF)).Decode(&echeck)
 	checkErr(err)
 
 	//fmt.Printf(buf.String())
 
-	var v struct {
+	var dT, dF struct {
 		Records []map[string]string
 	}
-	json.NewDecoder(buf).Decode(&v)
+	json.NewDecoder(bufDT).Decode(&dT)
+	json.NewDecoder(bufDF).Decode(&dF)
 
 	//fmt.Println(reflect.TypeOf(v.Records))
 	//for k, vv := range v.Records {
 	//	fmt.Printf("\n\n-- %d --\n%s", k, vv)
 	//}
+	for i, eachDT := range dT.Records {
+		for k, v := range eachDT {
+			if strings.Contains(k, "-ID") {
+				continue
+			}
+			if dF.Records[i][k] != v {
+				dT.Records[i][k+"-ID"] = dF.Records[i][k]
+			}
+		}
+	}
 
-	return v.Records, len(v.Records)
+	return dT.Records, len(dT.Records)
 }
 
 //PUSH Pushes data to SN
-func (c *Client) PUSH(table, opts string, bodies ...map[string]string) {
+func (c *Client) PUSH(table, opts string, bodies map[string]string) {
 	for _, body := range bodies {
 		url := "https://" + c.Instance + table + ".do?JSON&sysparm_query=" + opts + "&sysparm_action=update"
 
@@ -115,6 +128,22 @@ func (c *Client) PUSH(table, opts string, bodies ...map[string]string) {
 		res, err := httpClient.Do(req)
 		checkErr(err)
 		fmt.Println(res.Body)
+	}
+}
+
+func PrintOptions(bodies []map[string]string) {
+	keys := make([]string, 0, len(bodies[0]))
+	for k := range bodies[0] {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, each := range bodies {
+		fmt.Printf("\n-------------------------------------- -- --------------------------------------")
+		for _, k := range keys {
+			fmt.Printf("\n%38s -- %-38s", k, each[k])
+		}
+		fmt.Printf("\n")
 	}
 }
 
