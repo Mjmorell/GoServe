@@ -109,28 +109,35 @@ func (c *Client) PULL(table, opts string) ([]map[string]string, int) {
 }
 
 //PUSH Pushes data to SN
-func (c *Client) PUSH(table, opts string, bodies map[string]string) {
-	for _, body := range bodies {
-		url := "https://" + c.Instance + table + ".do?JSON&sysparm_query=" + opts + "&sysparm_action=update"
+func (c *Client) PUSH(table, opts string, body map[string]string) {
+	fmt.Println("testing a push...")
+	//for _, body := range bodies {
+	url := "https://" + c.Instance + table + ".do?JSON&sysparm_query=" + opts + "&sysparm_action=update"
 
-		buf := &bytes.Buffer{}
+	buf := &bytes.Buffer{}
 
-		err := json.NewEncoder(buf).Encode(body)
-		checkErr(err)
+	err := json.NewEncoder(buf).Encode(body)
+	checkErr(err)
 
-		req, err := http.NewRequest(http.MethodPost, url, buf)
-		checkErr(err)
+	req, err := http.NewRequest(http.MethodPost, url, buf)
+	checkErr(err)
 
-		req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", "application/json")
 
-		req.SetBasicAuth(c.Username, c.Password)
+	req.SetBasicAuth(c.Username, c.Password)
 
-		res, err := httpClient.Do(req)
-		checkErr(err)
-		fmt.Println(res.Body)
-	}
+	res, err := httpClient.Do(req)
+	checkErr(err)
+	fmt.Println(res.Body)
+	//}
 }
 
+/*
+body[k] = v
+
+*/
+
+//PrintOptions for printing out options
 func PrintOptions(bodies []map[string]string) {
 	keys := make([]string, 0, len(bodies[0]))
 	for k := range bodies[0] {
