@@ -110,7 +110,6 @@ func (c *Client) PULL(table, opts string) ([]map[string]string, int) {
 
 //PUSH Pushes data to SN
 func (c *Client) PUSH(table, opts string, body map[string]string) {
-	fmt.Println("testing a push...")
 	//for _, body := range bodies {
 	url := "https://" + c.Instance + table + ".do?JSON&sysparm_query=" + opts + "&sysparm_action=update"
 
@@ -126,9 +125,8 @@ func (c *Client) PUSH(table, opts string, body map[string]string) {
 
 	req.SetBasicAuth(c.Username, c.Password)
 
-	res, err := httpClient.Do(req)
+	_, err = httpClient.Do(req)
 	checkErr(err)
-	fmt.Println(res.Body)
 	//}
 }
 
